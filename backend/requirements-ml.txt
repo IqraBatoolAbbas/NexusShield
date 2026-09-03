@@ -1,0 +1,5 @@
+# Optional local intelligence adapters. The core app has a deterministic CPU fallback.
+transformers>=4.48
+torch>=2.5
+chromadb>=0.6
+redis>=5.2

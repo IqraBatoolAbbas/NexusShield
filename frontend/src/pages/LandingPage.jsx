@@ -1,0 +1,15 @@
+import React, { useEffect, useState } from "react";
+import { ArrowRight, CheckCircle2, ChevronRight, LockKeyhole, Radar, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import AuthLayout from "../layouts/AuthLayout";
+
+const signals = [
+  ["7", "defensive layers", "One CPU-first perimeter from ingress to output."],
+  ["<5ms", "edge inference", "Fast enough for production conversational UX."],
+  ["AES-256", "audit protection", "Encrypted traces with tamper-evident chaining."],
+];
+
+export default function LandingPage({ onGetStarted, onLogin, onPricing }) {
+  const [active, setActive] = useState(0);
+  useEffect(() => { const timer = setInterval(() => setActive((value) => (value + 1) % signals.length), 2600); return () => clearInterval(timer); }, []);
+  return <AuthLayout><div className="home-page"><nav className="home-nav"><div className="brand"><div className="brand-mark"><ShieldCheck size={22} /></div><div><strong>NEXUS<span>SHIELD</span></strong><small>AI SECURITY FABRIC</small></div></div><div className="home-links"><button onClick={onPricing}>Pricing</button><button onClick={onLogin}>Sign in</button><button className="home-cta" onClick={onGetStarted}>Get started <ArrowRight size={14} /></button></div></nav><section className="hero-grid"><div className="hero-copy"><span className="hero-kicker"><span className="pulse" /> THE AI PERIMETER FOR SERIOUS TEAMS</span><h1>Ship AI fast.<br /><span>Keep control.</span></h1><p>NexusShield sits between your users and your LLM, blocking prompt attacks, scrubbing PII, and trapping suspicious actors before they reach production systems.</p><div className="hero-actions"><button className="home-cta" onClick={onGetStarted}>CREATE FREE WORKSPACE <ArrowRight size={15} /></button><button className="ghost-cta" onClick={onLogin}>SIGN IN TO CONSOLE</button></div><div className="trust-row"><span><CheckCircle2 size={14} /> No GPU required</span><span><CheckCircle2 size={14} /> Tenant isolated</span><span><CheckCircle2 size={14} /> Open API</span></div></div><div className="hero-visual"><div className="orbital orbital-one" /><div className="orbital orbital-two" /><div className="shield-orb"><ShieldCheck size={50} /><span>PERIMETER<br /><b>ONLINE</b></span></div><div className="orbit-chip chip-a"><Radar size={14} /> HONEYPOT ARMED</div><div className="orbit-chip chip-b"><LockKeyhole size={14} /> AES-256 VERIFIED</div><div className="orbit-chip chip-c"><Zap size={14} /> 3.7ms LATENCY</div></div></section><section className="signal-strip">{signals.map(([value, title, description], index) => <button className={active === index ? "signal-active" : ""} onClick={() => setActive(index)} key={title}><strong>{value}</strong><span><b>{title}</b>{description}</span></button>)}</section><section className="home-bottom"><div><span className="section-kicker"><Sparkles size={14} /> BUILT FOR THE EDGE</span><h2>Security telemetry your team can understand.</h2></div><div className="feature-pills"><span>Prompt injection defense</span><span>Adaptive honeypot rooms</span><span>Compliance-ready audit chain</span></div></section></div></AuthLayout>;
+}
