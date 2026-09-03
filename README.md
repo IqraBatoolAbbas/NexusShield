@@ -35,7 +35,7 @@ access, adaptive deception, and cryptographic auditability in one platform.
 - Context-aware analysis using the latest five conversation turns
 - Jailbreak and malicious-intent scoring
 - AI Honeypot rooms for suspicious sessions
-- Persistent SQLite storage with tenant-scoped records
+- Tenant-scoped SQLite storage locally, with managed cloud database support recommended for Vercel production
 - JWT authentication and bcrypt password hashing
 - Admin, Developer, and Auditor role-based access control
 - Tenant-specific API key generation and revocation
@@ -212,6 +212,38 @@ $env:NEXUSSHIELD_ENABLE_LOCAL_MODEL="1"
 
 The application remains usable with its lightweight local heuristics when
 optional ML services are not installed.
+
+## Deploy as one Vercel project
+
+The repository includes a root [`vercel.json`](vercel.json) that serves the
+React build and routes `/api/*` to the FastAPI ASGI function in
+[`api/index.py`](api/index.py). Vercel uses the root
+[`requirements.txt`](requirements.txt), which includes the backend
+dependencies and the `mangum` adapter.
+
+1. Import this public repository into Vercel.
+2. Keep the project root set to the repository root (do not set `frontend` as
+   the root directory).
+3. Add these Environment Variables in Vercel:
+
+   ```text
+   NEXUSSHIELD_JWT_SECRET=<long-random-secret>
+   NEXUSSHIELD_LOG_KEY=<long-random-encryption-password>
+   NEXUSSHIELD_ALLOWED_ORIGINS=https://<your-vercel-domain>
+   VITE_API_URL=/api
+   ```
+
+4. Deploy. The frontend calls the same-origin `/api` routes automatically.
+
+### Database note for Vercel
+
+Vercel serverless functions do not provide durable local disk storage. The
+application therefore uses `/tmp/nexusshield` when `VERCEL=1`, which is useful
+for a demo but can reset between cold starts. For production persistence,
+replace the SQLite connection in `backend/app/database.py` with a managed
+SQLite-compatible provider such as Turso/libSQL, or migrate the data layer to
+PostgreSQL (Neon/Supabase) before enabling production billing or compliance
+workloads. Never store production secrets in the repository.
 
 ## Authentication and API Endpoints
 

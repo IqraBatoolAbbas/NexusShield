@@ -5,3 +5,4 @@ pydantic>=2.10
 bcrypt>=4.2
 PyJWT>=2.10
 pytest>=8.3
+mangum>=0.19

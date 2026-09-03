@@ -9,7 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-DATA_DIR = Path(os.getenv("NEXUSSHIELD_DATA_DIR", Path(__file__).resolve().parents[1] / "data"))
+# Vercel functions can only write to /tmp. This fallback keeps cold starts
+# functional; persistent production deployments should provide a cloud DB.
+default_data_dir = "/tmp/nexusshield" if os.getenv("VERCEL") else Path(__file__).resolve().parents[1] / "data"
+DATA_DIR = Path(os.getenv("NEXUSSHIELD_DATA_DIR", default_data_dir))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA_DIR / "nexusshield.sqlite3"
 
