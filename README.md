@@ -245,6 +245,29 @@ SQLite-compatible provider such as Turso/libSQL, or migrate the data layer to
 PostgreSQL (Neon/Supabase) before enabling production billing or compliance
 workloads. Never store production secrets in the repository.
 
+## Deploying the API on Railway
+
+If the frontend is hosted separately from the API, set the frontend build
+variable `VITE_API_URL` to the Railway API base URL, for example:
+
+```text
+VITE_API_URL=https://<your-railway-domain>/api
+```
+
+On Railway, configure the same stable values for:
+
+```text
+NEXUSSHIELD_JWT_SECRET=<long-random-secret>
+NEXUSSHIELD_LOG_KEY=<long-random-encryption-password>
+NEXUSSHIELD_ALLOWED_ORIGINS=https://<your-frontend-domain>
+```
+
+Changing `NEXUSSHIELD_JWT_SECRET` invalidates all previously issued login
+tokens; users must sign in again. A `401 Unauthorized` response from protected
+routes means the browser has no valid bearer token, so clear the old
+`nexus_auth` local-storage entry and log in again. Passwords must be at least
+8 characters; shorter values correctly return `422 Unprocessable Content`.
+
 ## Authentication and API Endpoints
 
 ### Authentication

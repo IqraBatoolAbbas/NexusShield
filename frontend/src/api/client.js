@@ -18,7 +18,13 @@ export async function apiClient(path, options = {}) {
   }
   if (!response.ok) {
     let detail = `Request failed (${response.status})`;
-    try { detail = (await response.json()).detail || detail; } catch { /* non-json error */ }
+    try {
+      const payload = await response.json();
+      if (typeof payload.detail === "string") detail = payload.detail;
+      else if (Array.isArray(payload.detail)) {
+        detail = payload.detail.map((item) => item.msg || "Invalid request").join(". ");
+      }
+    } catch { /* non-json error */ }
     const error = new Error(detail);
     error.status = response.status;
     throw error;
