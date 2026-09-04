@@ -67,8 +67,66 @@ export function ApiKeyManager() {
 }
 
 export function TeamManager() {
-  const [members, setMembers] = useState([]); const load = () => shieldApi.team().then(setMembers).catch(() => {}); useEffect(load, []);
-  return <section className="content-section"><div className="section-intro"><div><span className="section-kicker"><Users size={14} /> ORGANIZATION ADMIN</span><h2>Team members</h2><p>Manage roles inside your isolated tenant workspace.</p></div></div><div className="table-wrap panel"><table><thead><tr><th>MEMBER</th><th>EMAIL</th><th>ROLE</th><th>JOINED</th><th>ACCESS</th></tr></thead><tbody>{members.map((member) => <tr key={member.id}><td>{member.name}</td><td>{member.email}</td><td><select className="role-select" value={member.role} onChange={(e) => shieldApi.updateRole(member.id, e.target.value).then(load)}><option value="admin">Admin</option><option value="developer">Developer</option><option value="auditor">Auditor</option></select></td><td>{new Date(member.created_at).toLocaleDateString()}</td><td><span className="active-pill">AUTHORIZED</span></td></tr>)}</tbody></table></div></section>;
+  const [members, setMembers] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      const data = await shieldApi.team();
+      setMembers(data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load team members.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+  return (
+    <section className="content-section">
+      <div className="section-intro">
+        <div>
+          <span className="section-kicker"><Users size={14} /> ORGANIZATION ADMIN</span>
+          <h2>Team members</h2>
+          <p>Manage roles inside your isolated tenant workspace.</p>
+        </div>
+      </div>
+      {loading ? (
+        <div className="panel" style={{ padding: "2rem", textAlign: "center" }}>Loading team members...</div>
+      ) : error ? (
+        <div className="panel" style={{ padding: "2rem", textAlign: "center", color: "#d97e70" }}>{error}</div>
+      ) : (
+        <div className="table-wrap panel">
+          <table>
+            <thead>
+              <tr><th>MEMBER</th><th>EMAIL</th><th>ROLE</th><th>JOINED</th><th>ACCESS</th></tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member.id}>
+                  <td>{member.name}</td>
+                  <td>{member.email}</td>
+                  <td>
+                    <select className="role-select" value={member.role} onChange={(e) => shieldApi.updateRole(member.id, e.target.value).then(load)}>
+                      <option value="admin">Admin</option>
+                      <option value="developer">Developer</option>
+                      <option value="auditor">Auditor</option>
+                    </select>
+                  </td>
+                  <td>{new Date(member.created_at).toLocaleDateString()}</td>
+                  <td><span className="active-pill">AUTHORIZED</span></td>
+                </tr>
+              ))}
+              {!members.length && <tr><td colSpan="5" className="empty-state">No team members found.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
 }
 
 export function Billing() {
