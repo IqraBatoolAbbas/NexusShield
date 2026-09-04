@@ -11,7 +11,7 @@ import {
   Users,
 } from "lucide-react";
 
-export const API_BASE_URL = import.meta.env.API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:8000/api");
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:8000/api");
 export const INITIAL_ANALYTICS = {
   scanned: 0, blocked: 0, remediated: 0, honeypots: 0, latency_ms: 0, threats: {}, layers: {},
 };
